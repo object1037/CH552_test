@@ -8,8 +8,8 @@ void main(void) {
 
   while (1) {
     P3_0 = 0;
-    delay(5000);
+    delay(1000);
     P3_0 = 1;
-    delay(5000);
+    delay(1000);
   }
 }
