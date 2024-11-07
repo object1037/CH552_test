@@ -1,19 +1,15 @@
 #include <8051.h>
 #include <stdint.h>
 
-void delay(void);
+#include <ch552.h>
 
 void main(void) {
+  ConfigClock();
+
   while (1) {
     P3_0 = 0;
-    delay();
+    delay(5000);
     P3_0 = 1;
-    delay();
+    delay(5000);
   }
-}
-
-void delay(void) {
-  uint16_t i;
-
-  for (i = 0; i < 0xffff; i++);
 }

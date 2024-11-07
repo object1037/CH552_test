@@ -4,7 +4,8 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/share/sdcc/include"
+                "/opt/homebrew/share/sdcc/include",
+                "${workspaceFolder}/include"
             ],
             "defines": [
                 "__sfr=unsigned char",
