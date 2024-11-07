@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/homebrew/share/sdcc/include"
+            ],
+            "defines": [
+                "__sfr=unsigned char",
+                "__sbit=int",
+                "__at(a)= ",
+                ""
+            ],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/opt/homebrew/bin/sdcc",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "macos-clang-arm64",
+            "compilerArgs": [
+                "-mmcs51",
+                "--iram-size 256",
+                "--xram-size 1024",
+                "--code-size 14336",
+                "--stack-auto"
+            ]
+        }
+    ],
+    "version": 4
+}
