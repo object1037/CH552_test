@@ -1,7 +1,7 @@
 #include <8051.h>
 #include <stdint.h>
 
-#include <ch552.h>
+#include "ch552.h"
 
 void main(void) {
   ConfigClock();
