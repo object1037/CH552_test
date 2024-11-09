@@ -1,6 +1,0 @@
-{
-  "files.associations": {
-    "*.g": "gnuplot",
-    "8051.h": "c"
-  }
-}
