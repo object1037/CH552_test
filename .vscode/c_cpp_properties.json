@@ -4,13 +4,17 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/share/sdcc/include",
+                "/opt/homebrew/share/sdcc/include/mcs51",
                 "${workspaceFolder}/include"
             ],
             "defines": [
                 "__sfr=unsigned char",
+                "__sfr16=unsigned short int",
                 "__sbit=int",
-                "__at(a)= ",
+                "__at(a)=",
+                "__xdata=",
+                "xdata=",
+                "__interrupt(a)=",
                 ""
             ],
             "macFrameworkPath": [
