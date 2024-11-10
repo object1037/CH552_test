@@ -13,7 +13,6 @@
                 "__sbit=int",
                 "__at(a)=",
                 "__xdata=",
-                "xdata=",
                 "__interrupt(a)=",
                 ""
             ],

@@ -1,5 +1,7 @@
+#include "time.h"
+
+#include <stdint.h>
 #include "ch552.h"
-#include <8051.h>
 
 void ConfigClock(void) {
   // enter safe mode
