@@ -13,7 +13,10 @@
                 "__sbit=int",
                 "__at(a)=",
                 "__xdata=",
+                "__idata=",
+                "__code=",
                 "__interrupt(a)=",
+                "__using(a)=",
                 ""
             ],
             "macFrameworkPath": [

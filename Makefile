@@ -11,12 +11,14 @@ MAIN := $(OUTDIR)/main.rel
 DEPS := $(filter-out $(MAIN), $(RELS))
 
 XRAM_SIZE ?= 0x0400
+XRAM_LOC ?= 0x0100
 IRAM_SIZE ?= 0x0100
 CODE_SIZE ?= 0x3800
 
 CFLAGS := -mmcs51 \
 					--model-large \
 					--xram-size $(XRAM_SIZE) \
+					--xram-loc $(XRAM_LOC) \
 					--iram-size $(IRAM_SIZE) \
 					--code-size $(CODE_SIZE) \
 					--stack-auto \

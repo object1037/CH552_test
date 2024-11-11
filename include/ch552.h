@@ -3,6 +3,8 @@
 
 #include <compiler.h>
 
+#define FREQ_SYS 6000000
+
 /*----- SFR --------------------------------------------------------------*/
 /*  sbit are bit addressable, others are byte addressable */
 

@@ -2,6 +2,12 @@
 #define __USB_DEF__
 
 #include <stdint.h>
+#include "ch552.h"
+
+void USBDevConfig(void);
+void USBIntConfig(void);
+void USBDevEPConfig(void);
+void SendData(uint8_t *buf);
 
 /*----- USB constant and structure define --------------------------------*/
 
@@ -122,6 +128,14 @@
 #define USB_DESCR_TYP_HUB 0x29
 #endif
 
+/* USB descriptor subtype */
+#ifndef USB_DESCR_SUBTYP_HEADER
+#define USB_DESCR_SUBTYP_HEADER 0x00
+#define USB_DESCR_SUBTYP_CALL 0x01
+#define USB_DESCR_SUBTYP_ACM 0x02
+#define USB_DESCR_SUBTYP_UNION 0x06
+#endif
+
 /* USB device class */
 #ifndef USB_DEV_CLASS_HUB
 #define USB_DEV_CLASS_RESERVED 0x00
@@ -135,6 +149,17 @@
 #define USB_DEV_CLASS_STORAGE 0x08
 #define USB_DEV_CLASS_HUB 0x09
 #define USB_DEV_CLASS_VEN_SPEC 0xFF
+#endif
+
+/* USB interface class */
+#ifndef USB_INTF_CLASS_COMMUNIC
+#define USB_INTF_CLASS_COMMUNIC 0x02
+#define USB_INTF_CLASS_DATA 0x0A
+#endif
+
+/* USB communications interface subclass */
+#ifndef USB_INTF_SUBCLASS_ACM
+#define USB_INTF_SUBCLASS_ACM 0x02
 #endif
 
 /* USB endpoint type and attributes */
@@ -256,6 +281,18 @@ typedef struct _USB_CONFIG_DESCR_LONG {
 
 typedef USB_CFG_DESCR_LONG __xdata *PXUSB_CFG_DESCR_LONG;
 
+typedef struct _USB_CONFIG_DESCR_CDC {
+  USB_CFG_DESCR cfg_descr;
+  USB_ITF_DESCR comm_itf_descr;
+  USB_CDC_HEADER_FUNC_DESCR header_func_descr;
+  USB_CDC_ACM_FUNC_DESCR acm_func_descr;
+  USB_CDC_UNION_FUNC_DESCR union_func_descr;
+  USB_CDC_CALL_FUNC_DESCR call_func_descr;
+  USB_ENDP_DESCR comm_endp_descr[1];
+  USB_ITF_DESCR data_itf_descr;
+  USB_ENDP_DESCR data_endp_descr[2];
+} USB_CFG_DESCR_CDC, *PUSB_CFG_DESCR_CDC;
+
 typedef struct _USB_HUB_DESCR {
   uint8_t bDescLength;
   uint8_t bDescriptorType;
@@ -283,6 +320,37 @@ typedef struct _USB_HID_DESCR {
 } USB_HID_DESCR, *PUSB_HID_DESCR;
 
 typedef USB_HID_DESCR __xdata *PXUSB_HID_DESCR;
+
+typedef struct _USB_CDC_HEADER_FUNC_DESCR {
+  uint8_t bFunctionLength;
+  uint8_t bDescriptorType;
+  uint8_t bDescriptorSubtype;
+  uint8_t bcdCDCL;
+  uint8_t bcdCDCH;
+} USB_CDC_HEADER_FUNC_DESCR, *PUSB_CDC_HEADER_FUNC_DESCR;
+
+typedef struct _USB_CDC_UNION_FUNC_DESCR {
+  uint8_t bFunctionLength;
+  uint8_t bDescriptorType;
+  uint8_t bDescriptorSubtype;
+  uint8_t bControlInterface;
+  uint8_t bSubordinateInterface0;
+} USB_CDC_UNION_FUNC_DESCR, *PUSB_CDC_UNION_FUNC_DESCR;
+
+typedef struct _USB_CDC_CALL_FUNC_DESCR {
+  uint8_t bFunctionLength;
+  uint8_t bDescriptorType;
+  uint8_t bDescriptorSubtype;
+  uint8_t bmCapabilities;
+  uint8_t bDataInterface;
+} USB_CDC_CALL_FUNC_DESCR, *PUSB_CDC_CALL_FUNC_DESCR;
+
+typedef struct _USB_CDC_ACM_FUNC_DESCR {
+  uint8_t bFunctionLength;
+  uint8_t bDescriptorType;
+  uint8_t bDescriptorSubtype;
+  uint8_t bmCapabilities;
+} USB_CDC_ACM_FUNC_DESCR, *PUSB_CDC_ACM_FUNC_DESCR;
 
 typedef struct _UDISK_BOC_CBW { /* command of BulkOnly USB-FlashDisk */
   uint8_t mCBW_Sig0;
