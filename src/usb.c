@@ -44,7 +44,7 @@ __code USB_CFG_DESCR_CDC CfgDesc = {
     .bNumEndpoints = 0x01,
     .bInterfaceClass = USB_INTF_CLASS_COMMUNIC,
     .bInterfaceSubClass = USB_INTF_SUBCLASS_ACM,
-    .bInterfaceProtocol = 0x00,
+    .bInterfaceProtocol = 0x01, // AT commands V.250
     .iInterface = 0x00,
   },
   .header_func_descr = {
@@ -120,7 +120,7 @@ __xdata __at(0x0048) uint8_t Ep2Buffer[2 * MAX_PACKET_SIZE];
 void USBDevConfig(void) {
   USB_CTRL = 0x00;
   USB_CTRL |= bUC_DEV_PU_EN | bUC_INT_BUSY | bUC_DMA_EN;
-  USB_DEV_AD = 0x00;
+  USB_DEV_AD = USB_DEVICE_ADDR;
 
   USB_CTRL &= ~bUC_LOW_SPEED;
   UDEV_CTRL &= ~bUD_LOW_SPEED;
@@ -141,4 +141,52 @@ void USBDevEPConfig(void) {
 
 void SendData(uint8_t *buf) {}
 
-void USBInterrupt(void) __interrupt(INT_NO_USB) __using(1) {}
+void USBInterrupt(void) __interrupt(INT_NO_USB) __using(1) {
+  if (UIF_TRANSFER) {
+    // USB transfer complete
+    switch (USB_INT_ST & (MASK_UIS_TOKEN | MASK_UIS_ENDP)) {
+      case UIS_TOKEN_SETUP | 0:
+        // EP0 SETUP
+        break;
+      case UIS_TOKEN_IN | 0:
+        // EP0 IN
+        break;
+      case UIS_TOKEN_OUT | 0:
+        // EP0 OUT
+        break;
+      case UIS_TOKEN_IN | 1:
+        // EP1 IN
+        break;
+      case UIS_TOKEN_IN | 2:
+        // EP2 IN
+        break;
+      case UIS_TOKEN_OUT | 2:
+        // EP2 OUT
+        break;
+      default:
+        break;
+    }
+    UIF_TRANSFER = 0;
+  }
+
+  if (UIF_BUS_RST) {
+    // USB bus reset
+    UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+    UEP1_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK;
+    UEP2_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_ACK;
+    USB_DEV_AD = USB_DEVICE_ADDR;
+    UIF_SUSPEND = 0;
+    UIF_TRANSFER = 0;
+    UIF_BUS_RST = 0;
+  }
+
+  if (UIF_SUSPEND) {
+    // USB bus suspend/wakeup
+    UIF_SUSPEND = 0;
+    if (USB_MIS_ST & bUMS_SUSPEND) {
+      // suspend
+    }
+  } else {
+    USB_INT_FG = 0x00;
+  }
+}
