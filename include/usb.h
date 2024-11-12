@@ -41,6 +41,13 @@ void SendData(uint8_t *buf);
 #define USB_SYNCH_FRAME 0x0C
 #endif
 
+/* PSTN request code */
+#ifndef PSTN_SET_LINE_CODING
+#define PSTN_SET_LINE_CODING 0x20
+#define PSTN_GET_LINE_CODING 0x21
+#define PSTN_SET_CONTROL_LINE_STATE 0x22
+#endif
+
 /* USB hub class request code */
 #ifndef HUB_GET_DESCRIPTOR
 #define HUB_GET_STATUS 0x00
@@ -209,6 +216,16 @@ typedef struct _USB_SETUP_REQ {
 } USB_SETUP_REQ, *PUSB_SETUP_REQ;
 
 typedef USB_SETUP_REQ __xdata *PXUSB_SETUP_REQ;
+
+typedef struct _PSTN_LINE_CODING {
+  uint8_t DTERate0L;
+  uint8_t DTERate0H;
+  uint8_t DTERate1L;
+  uint8_t DTERate1H;
+  uint8_t bCharFormat;
+  uint8_t bParityType;
+  uint8_t bDataBits;
+} PSTN_LINE_CODING, *PPSTN_LINE_CODING;
 
 typedef struct _USB_DEVICE_DESCR {
   uint8_t bLength;

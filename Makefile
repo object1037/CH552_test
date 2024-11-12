@@ -10,7 +10,7 @@ RELS := $(patsubst $(SRCDIR)/%.c, $(OUTDIR)/%.rel, $(wildcard $(SRCDIR)/*.c))
 MAIN := $(OUTDIR)/main.rel
 DEPS := $(filter-out $(MAIN), $(RELS))
 
-XRAM_SIZE ?= 0x0400
+XRAM_SIZE ?= 0x0300
 XRAM_LOC ?= 0x0100
 IRAM_SIZE ?= 0x0100
 CODE_SIZE ?= 0x3800

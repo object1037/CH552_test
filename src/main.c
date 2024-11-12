@@ -16,7 +16,6 @@ void main(void) {
   UEP2_T_LEN = 0;
 
   while (1) {
-    RXD = !RXD;
     SendData("Hoge\n");
     delay(1000);
   }
