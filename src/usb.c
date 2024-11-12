@@ -34,7 +34,7 @@ __code USB_CFG_DESCR_CDC CfgDesc = {
   .cfg_descr = {
     .bLength = sizeof(USB_CFG_DESCR),
     .bDescriptorType = USB_DESCR_TYP_CONFIG,
-    .wTotalLengthL = 0x43,
+    .wTotalLengthL = sizeof(USB_CFG_DESCR_CDC),
     .wTotalLengthH = 0x00,
     .bNumInterfaces = 0x02,
     .bConfigurationValue = 0x01,
@@ -164,7 +164,14 @@ void USBDevEPConfig(void) {
   UEP2_CTRL = bUEP_AUTO_TOG | UEP_T_RES_NAK | UEP_R_RES_ACK;
 }
 
-void SendData(uint8_t *buf) {}
+void SendData(uint8_t *buf) {
+  uint8_t tx_len;
+  for (tx_len = 0; buf[tx_len] != 0; tx_len++) {
+    Ep2Buffer[MAX_PACKET_SIZE + tx_len] = buf[tx_len];
+  }
+  UEP2_T_LEN = tx_len;
+  UEP2_CTRL &= ~MASK_UEP_T_RES;
+}
 
 void HandleGetDescriptor(uint16_t *tx_len) {
   uint8_t descType = UsbSetupBuf->wValueH;
@@ -321,8 +328,6 @@ void USBInterrupt(void) __interrupt(INT_NO_USB) __using(1) {
       case UIS_TOKEN_OUT | 2:
         // EP2 OUT
         if (!U_TOG_OK) break;
-        // USBByteCount = USB_RX_LEN;
-        // USBBufOutPoint = 0;
         UEP2_CTRL = UEP2_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
         break;
       default:

@@ -16,7 +16,7 @@ void main(void) {
   UEP2_T_LEN = 0;
 
   while (1) {
-    SendData("Hoge\n");
+    SendData("Hello, World!\r\n");
     delay(1000);
   }
 }
