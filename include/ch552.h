@@ -1,6 +1,7 @@
 #ifndef __CH552_H__
 #define __CH552_H__
 
+#include <lint.h>
 #include <compiler.h>
 
 #define FREQ_SYS 6000000

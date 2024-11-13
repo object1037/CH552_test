@@ -1,10 +1,12 @@
 CC := sdcc
 OBJCOPY := objcopy
+LINTER := splint
 
 TARGET := app.bin
 SRCDIR := src
 OUTDIR := bin
-INCLUDES := include
+INCLUDES := ./include
+SYS_INCLUDES := /opt/homebrew/share/sdcc/include/mcs51
 
 RELS := $(patsubst $(SRCDIR)/%.c, $(OUTDIR)/%.rel, $(wildcard $(SRCDIR)/*.c))
 MAIN := $(OUTDIR)/main.rel
@@ -22,7 +24,7 @@ CFLAGS := -mmcs51 \
 					--iram-size $(IRAM_SIZE) \
 					--code-size $(CODE_SIZE) \
 					--stack-auto \
-					-I./$(INCLUDES)
+					-I$(INCLUDES)
 
 $(OUTDIR)/%.rel: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -32,6 +34,11 @@ $(OUTDIR)/$(TARGET): $(OUTDIR)/$(TARGET:.bin=.ihx)
 
 $(OUTDIR)/$(TARGET:.bin=.ihx): $(RELS)
 	$(CC) $(MAIN) $(DEPS) $(CFLAGS) -o $@
+
+.PHONY: lint
+
+lint:
+	$(LINTER) -I$(SYS_INCLUDES) -I$(INCLUDES) -preproc $(SRCDIR)/*.c
 
 .PHONY: clean
 

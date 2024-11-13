@@ -265,9 +265,10 @@ void SetupEp0(void) {
 }
 
 void InEp0(void) {
+  uint16_t tx_len;
   switch (SetupReq) {
     case USB_GET_DESCRIPTOR:
-      uint16_t tx_len = SetupLen >= DEFAULT_ENDP0_SIZE ? DEFAULT_ENDP0_SIZE : SetupLen;
+      tx_len = SetupLen >= DEFAULT_ENDP0_SIZE ? DEFAULT_ENDP0_SIZE : SetupLen;
       memcpy(Ep0Buffer, pDescr, tx_len);
       SetupLen -= tx_len;
       pDescr += tx_len;
