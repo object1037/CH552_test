@@ -24,9 +24,9 @@ __code USB_DEV_DESCR DevDesc = {
   .idProductH = 0x55,
   .bcdDeviceL = 0x00,
   .bcdDeviceH = 0x01,
-  .iManufacturer = 0x00,
-  .iProduct = 0x00,
-  .iSerialNumber = 0x00,
+  .iManufacturer = 0x01,
+  .iProduct = 0x02,
+  .iSerialNumber = 0x03,
   .bNumConfigurations = 0x01,
 };
 
@@ -119,6 +119,38 @@ __code USB_CFG_DESCR_CDC CfgDesc = {
   }},
 };
 
+unsigned char __code LangDesc[] = {
+  sizeof(LangDesc),
+  USB_DESCR_TYP_STRING,
+  0x09, 0x04  // English (US)
+};
+
+unsigned char __code ManufDesc[] = {
+  sizeof(ManufDesc),
+  USB_DESCR_TYP_STRING,
+  0x46, 0x30, // う
+  0x6A, 0x30, // な
+  0x4E, 0x30, // ぎ
+  0x02, 0x5C, // 専
+  0x80, 0x95, // 門
+  0x97, 0x5E, // 店
+};
+
+unsigned char __code ProdDesc[] = {
+  sizeof(ProdDesc),
+  USB_DESCR_TYP_STRING,
+  0x7A, 0x12, // ቺቻቺቻ
+  0x7B, 0x12,
+  0x7A, 0x12,
+  0x7B, 0x12,
+};
+
+unsigned char __code SerialDesc[] = {
+  sizeof(SerialDesc),
+  USB_DESCR_TYP_STRING,
+  0x50, 0x21,
+};
+
 __xdata PSTN_LINE_CODING LineCoding = {
   .DTERate0L = 0x00,
   .DTERate0H = 0xE1,   // baud rate 57600
@@ -183,6 +215,22 @@ void HandleGetDescriptor(uint16_t *tx_len) {
     case USB_DESCR_TYP_CONFIG:
       pDescr = (uint8_t *)&CfgDesc;
       *tx_len = sizeof(CfgDesc);
+      break;
+    case USB_DESCR_TYP_STRING:
+      uint8_t descIndex = UsbSetupBuf->wValueL;
+      if (descIndex == 0) {
+        pDescr = (uint8_t *)&LangDesc;
+        *tx_len = LangDesc[0];
+      } else if (descIndex == 1) {
+        pDescr = (uint8_t *)&ManufDesc;
+        *tx_len = ManufDesc[0];
+      } else if (descIndex == 2) {
+        pDescr = (uint8_t *)&ProdDesc;
+        *tx_len = ProdDesc[0];
+      } else if (descIndex == 3) {
+        pDescr = (uint8_t *)&SerialDesc;
+        *tx_len = SerialDesc[0];
+      }
       break;
     default:
       *tx_len = 0xFF;
