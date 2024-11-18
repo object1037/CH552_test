@@ -276,7 +276,7 @@ void InEp0(void) {
       UEP0_CTRL ^= bUEP_T_TOG;
       break;
     case USB_SET_ADDRESS:
-      USB_DEV_AD = USB_DEV_AD & bUDA_GP_BIT | SetupLen;
+      USB_DEV_AD = SetupLen;
       UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
       break;
     default:
@@ -354,14 +354,6 @@ void USBInterrupt(void) __interrupt(INT_NO_USB) __using(1) {
     UIF_SUSPEND = 0;
     if (USB_MIS_ST & bUMS_SUSPEND) {
       // suspend
-      while (XBUS_AUX & bUART0_TX);
-      SAFE_MOD = 0x55;
-      SAFE_MOD = 0xAA;
-      WAKE_CTRL = bWAK_BY_USB | bWAK_RXD0_LO;
-      PCON |= PD;
-      SAFE_MOD = 0x55;
-      SAFE_MOD = 0xAA;
-      WAKE_CTRL = 0x00;
     }
   } else {
     USB_INT_FG = 0x00;

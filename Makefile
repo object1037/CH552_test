@@ -38,7 +38,7 @@ $(OUTDIR)/$(TARGET:.bin=.ihx): $(RELS)
 .PHONY: lint
 
 lint:
-	$(LINTER) -I$(SYS_INCLUDES) -I$(INCLUDES) -preproc $(SRCDIR)/*.c
+	$(LINTER) -I$(SYS_INCLUDES) -I$(INCLUDES) -preproc -maintype $(SRCDIR)/*.c
 
 .PHONY: clean
 
