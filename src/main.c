@@ -16,7 +16,10 @@ void main(void) {
   UEP2_T_LEN = 0;
 
   while (1) {
-    SendData("Hello, World!\r\n");
-    delay(1000);
+    // SendData("Hello, World!\r\n");
+    SendKeycode(0x04);
+    delay(50);
+    SendKeycode(0x00);
+    delay(5000);
   }
 }

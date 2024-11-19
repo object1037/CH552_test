@@ -8,6 +8,7 @@ void USBDevConfig(void);
 void USBIntConfig(void);
 void USBDevEPConfig(void);
 void SendData(uint8_t *buf);
+void SendKeycode(uint8_t keycode);
 
 /*----- USB constant and structure define --------------------------------*/
 
@@ -161,6 +162,7 @@ void SendData(uint8_t *buf);
 /* USB interface class */
 #ifndef USB_INTF_CLASS_COMMUNIC
 #define USB_INTF_CLASS_COMMUNIC 0x02
+#define USB_INTF_CLASS_HID 0x03
 #define USB_INTF_CLASS_DATA 0x0A
 #endif
 
@@ -369,6 +371,13 @@ typedef struct _USB_HID_DESCR {
 
 typedef USB_HID_DESCR __xdata *PXUSB_HID_DESCR;
 
+typedef struct _USB_CONFIG_DESCR_HID {
+  USB_CFG_DESCR cfg_descr;
+  USB_ITF_DESCR itf_descr;
+  USB_HID_DESCR hid_descr;
+  USB_ENDP_DESCR endp_descr;
+} USB_CFG_DESCR_HID, *PUSB_CFG_DESCR_HID;
+
 typedef struct _UDISK_BOC_CBW { /* command of BulkOnly USB-FlashDisk */
   uint8_t mCBW_Sig0;
   uint8_t mCBW_Sig1;
@@ -407,5 +416,11 @@ typedef struct _UDISK_BOC_CSW { /* status of BulkOnly USB-FlashDisk */
 } UDISK_BOC_CSW, *PUDISK_BOC_CSW;
 
 typedef UDISK_BOC_CSW __xdata *PXUDISK_BOC_CSW;
+
+typedef struct _KEY_REPORT {
+  uint8_t modifiers;
+  uint8_t reserved;
+  uint8_t keycodes[6];
+} KEY_REPORT, *PKEY_REPORT;
 
 #endif  // __USB_DEF__

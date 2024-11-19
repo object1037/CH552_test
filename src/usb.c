@@ -14,14 +14,14 @@ __code USB_DEV_DESCR DevDesc = {
   .bDescriptorType = USB_DESCR_TYP_DEVICE,
   .bcdUSBL = 0x10,
   .bcdUSBH = 0x01,  // USB 1.1
-  .bDeviceClass = USB_DEV_CLASS_COMMUNIC,
+  .bDeviceClass = 0x00,
   .bDeviceSubClass = 0x00,
   .bDeviceProtocol = 0x00,
   .bMaxPacketSize0 = DEFAULT_ENDP0_SIZE,
-  .idVendorL = 0x86,
-  .idVendorH = 0x1a,
-  .idProductL = 0x23,
-  .idProductH = 0x55,
+  .idVendorL = 0xFE,
+  .idVendorH = 0xCA,
+  .idProductL = 0xBE,
+  .idProductH = 0xBA,
   .bcdDeviceL = 0x00,
   .bcdDeviceH = 0x01,
   .iManufacturer = 0x01,
@@ -30,6 +30,7 @@ __code USB_DEV_DESCR DevDesc = {
   .bNumConfigurations = 0x01,
 };
 
+/*
 __code USB_CFG_DESCR_CDC CfgDesc = {
   .cfg_descr = {
     .bLength = sizeof(USB_CFG_DESCR),
@@ -118,6 +119,81 @@ __code USB_CFG_DESCR_CDC CfgDesc = {
     .bInterval = 0x00,
   }},
 };
+*/
+
+__code USB_CFG_DESCR_HID CfgDesc = {
+.cfg_descr = {
+    .bLength = sizeof(USB_CFG_DESCR),
+    .bDescriptorType = USB_DESCR_TYP_CONFIG,
+    .wTotalLengthL = sizeof(USB_CFG_DESCR_HID),
+    .wTotalLengthH = 0x00,
+    .bNumInterfaces = 0x01,
+    .bConfigurationValue = 0x01,
+    .iConfiguration = 0x00,
+    .bmAttributes = 0x80,
+    .MaxPower = 0x32,  // 100 mA
+  },
+  .itf_descr = {
+    .bLength = sizeof(USB_ITF_DESCR),
+    .bDescriptorType = USB_DESCR_TYP_INTERF,
+    .bInterfaceNumber = 0x00,
+    .bAlternateSetting = 0x00,
+    .bNumEndpoints = 0x01,
+    .bInterfaceClass = USB_INTF_CLASS_HID,
+    .bInterfaceSubClass = 0x00, // boot device
+    .bInterfaceProtocol = 0x01, // keyboard
+    .iInterface = 0x00,
+  },
+  .hid_descr = {
+    .bLength = sizeof(USB_HID_DESCR),
+    .bDescriptorType = USB_DESCR_TYP_HID,
+    .bcdHIDL = 0x11,
+    .bcdHIDH = 0x01,
+    .bCountryCode = 0x00,
+    .bNumDescriptors = 0x01,
+    .bDescriptorTypeX = USB_DESCR_TYP_REPORT,
+    .wDescriptorLengthL = sizeof(ReportDesc),
+    .wDescriptorLengthH = 0x00,
+  },
+  .endp_descr = {
+    .bLength = sizeof(USB_ENDP_DESCR),
+    .bDescriptorType = USB_DESCR_TYP_ENDP,
+    .bEndpointAddress = 0x81,  // EP1 IN
+    .bmAttributes = 0x03,      // interrupt
+    .wMaxPacketSizeL = 0x08,
+    .wMaxPacketSizeH = 0x00,
+    .bInterval = 0x0A,         // 10 ms
+  },
+};
+
+uint8_t __code ReportDesc[] = {
+  0x05, 0x01,  // G Usage Page (Generic Desktop Ctrls)
+  0x09, 0x06,  // L Usage (Keyboard)
+  0xA1, 0x01,  // M Collection (Application)
+
+  0x05, 0x07,  // G  Usage Page (Kbrd/Keypad)
+  0x19, 0xE0,  // L  Usage Minimum (0xE0 LCtrl)
+  0x29, 0xE7,  // L  Usage Maximum (0xE7 RGUI)
+  0x15, 0x00,  // G  Logical Minimum (0)
+  0x25, 0x01,  // G  Logical Maximum (1)
+  0x75, 0x01,  // G  Report Size (1bit)
+  0x95, 0x08,  // G  Report Count (8)
+  0x81, 0x02,  // M  Input (Var, modifier)
+
+  0x75, 0x08,  // G  Report Size (8bit)
+  0x95, 0x01,  // G  Report Count (1)
+  0x81, 0x01,  // M  Input (Const, reserved)
+
+  0x05, 0x07,  // G  Usage Page (Kbrd/Keypad)
+  0x19, 0x00,  // L  Usage Minimum (0)
+  0x29, 0x67,  // L  Usage Maximum (103)
+  0x15, 0x00,  // G  Logical Minimum (0)
+  0x25, 0x67,  // G  Logical Maximum (103)
+  0x75, 0x08,  // G  Report Size (8bit)
+  0x95, 0x06,  // G  Report Count (6)
+  0x81, 0x00,  // M  Input (Array, keycodes)
+  0xC0,        // M End Collection
+};
 
 unsigned char __code LangDesc[] = {
   sizeof(LangDesc),
@@ -205,8 +281,20 @@ void SendData(uint8_t *buf) {
   UEP2_CTRL &= ~MASK_UEP_T_RES;
 }
 
+void SendKeycode(uint8_t keycode) {
+  KEY_REPORT report = {
+    .modifiers = 0x00,
+    .reserved = 0x00,
+    .keycodes = {keycode},
+  };
+  memcpy(Ep1Buffer, &report, sizeof(KEY_REPORT));
+  UEP1_T_LEN = sizeof(KEY_REPORT);
+  UEP1_CTRL &= ~MASK_UEP_T_RES;
+}
+
 void HandleGetDescriptor(uint16_t *tx_len) {
   uint8_t descType = UsbSetupBuf->wValueH;
+  uint8_t descIndex = UsbSetupBuf->wValueL;
   switch (descType) {
     case USB_DESCR_TYP_DEVICE:
       pDescr = (uint8_t *)&DevDesc;
@@ -217,7 +305,6 @@ void HandleGetDescriptor(uint16_t *tx_len) {
       *tx_len = sizeof(CfgDesc);
       break;
     case USB_DESCR_TYP_STRING:
-      uint8_t descIndex = UsbSetupBuf->wValueL;
       if (descIndex == 0) {
         pDescr = (uint8_t *)&LangDesc;
         *tx_len = LangDesc[0];
@@ -231,6 +318,10 @@ void HandleGetDescriptor(uint16_t *tx_len) {
         pDescr = (uint8_t *)&SerialDesc;
         *tx_len = SerialDesc[0];
       }
+      break;
+    case USB_DESCR_TYP_REPORT:
+      pDescr = ReportDesc;
+      *tx_len = sizeof(ReportDesc);
       break;
     default:
       *tx_len = 0xFF;
@@ -294,6 +385,14 @@ void SetupEp0(void) {
         SetupLen -= tx_len;
         pDescr += tx_len;
         break;
+      /*
+      case HID_GET_REPORT:
+        break;
+      case HID_GET_IDLE:
+        break;
+      case HID_SET_IDLE:
+        break;
+      */
       default:
         tx_len = 0xFF;
         break;
