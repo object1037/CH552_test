@@ -157,7 +157,7 @@ __code USB_CFG_DESCR_HID CfgDesc = {
   },
 };
 
-uint8_t __code ReportDesc[REPORT_SIZE] = {
+__code uint8_t ReportDesc[REPORT_SIZE] = {
   0x05, 0x01,  // G Usage Page (Generic Desktop Ctrls)
   0x09, 0x06,  // L Usage (Keyboard)
   0xA1, 0x01,  // M Collection (Application)
@@ -186,13 +186,13 @@ uint8_t __code ReportDesc[REPORT_SIZE] = {
   0xC0,        // M End Collection
 };
 
-unsigned char __code LangDesc[] = {
+__code uint8_t LangDesc[LANG_SIZE] = {
   sizeof(LangDesc),
   USB_DESCR_TYP_STRING,
   0x09, 0x04  // English (US)
 };
 
-unsigned char __code ManufDesc[] = {
+__code uint8_t ManufDesc[MANUF_SIZE] = {
   sizeof(ManufDesc),
   USB_DESCR_TYP_STRING,
   0x46, 0x30, // う
@@ -203,7 +203,7 @@ unsigned char __code ManufDesc[] = {
   0x97, 0x5E, // 店
 };
 
-unsigned char __code ProdDesc[] = {
+__code uint8_t ProdDesc[PROD_SIZE] = {
   sizeof(ProdDesc),
   USB_DESCR_TYP_STRING,
   0x7A, 0x12, // ቺቻቺቻ
@@ -212,10 +212,17 @@ unsigned char __code ProdDesc[] = {
   0x7B, 0x12,
 };
 
-unsigned char __code SerialDesc[] = {
+__code uint8_t SerialDesc[SERIAL_SIZE] = {
   sizeof(SerialDesc),
   USB_DESCR_TYP_STRING,
   0x50, 0x21,
+};
+
+__code uint8_t *StringDesc[] = {
+  LangDesc,
+  ManufDesc,
+  ProdDesc,
+  SerialDesc,
 };
 
 __xdata PSTN_LINE_CODING LineCoding = {

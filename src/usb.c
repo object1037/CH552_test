@@ -5,11 +5,8 @@
 
 extern __code USB_DEV_DESCR DevDesc;
 extern __code USB_CFG_DESCR_HID CfgDesc;
-extern uint8_t __code ReportDesc[REPORT_SIZE];
-extern unsigned char __code LangDesc[];
-extern unsigned char __code ManufDesc[];
-extern unsigned char __code ProdDesc[];
-extern unsigned char __code SerialDesc[];
+extern __code uint8_t ReportDesc[REPORT_SIZE];
+extern __code uint8_t *StringDesc[];
 extern __xdata PSTN_LINE_CODING LineCoding;
 
 __xdata __at(0x0000) uint8_t Ep0Buffer[DEFAULT_ENDP0_SIZE];
@@ -86,19 +83,8 @@ void HandleGetDescriptor(uint16_t *tx_len) {
       *tx_len = sizeof(CfgDesc);
       break;
     case USB_DESCR_TYP_STRING:
-      if (descIndex == 0) {
-        pDescr = (uint8_t *)&LangDesc;
-        *tx_len = LangDesc[0];
-      } else if (descIndex == 1) {
-        pDescr = (uint8_t *)&ManufDesc;
-        *tx_len = ManufDesc[0];
-      } else if (descIndex == 2) {
-        pDescr = (uint8_t *)&ProdDesc;
-        *tx_len = ProdDesc[0];
-      } else if (descIndex == 3) {
-        pDescr = (uint8_t *)&SerialDesc;
-        *tx_len = SerialDesc[0];
-      }
+      pDescr = StringDesc[descIndex];
+      *tx_len = pDescr[0];
       break;
     case USB_DESCR_TYP_REPORT:
       pDescr = ReportDesc;

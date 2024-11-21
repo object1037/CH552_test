@@ -5,6 +5,10 @@
 #include "ch552.h"
 
 #define REPORT_SIZE 45
+#define LANG_SIZE 4
+#define MANUF_SIZE 14
+#define PROD_SIZE 10
+#define SERIAL_SIZE 4
 
 void USBDevConfig(void);
 void USBIntConfig(void);
