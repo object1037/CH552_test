@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "ch552.h"
 
+#define REPORT_SIZE 45
+
 void USBDevConfig(void);
 void USBIntConfig(void);
 void USBDevEPConfig(void);
